@@ -25,7 +25,7 @@ export const getAll = () => {
 export const getByUserId = (id) => {
     const userPurchases = purchases.filter(purchase => purchase.user_id === Number(id))
 
-    if (userPurchases === undefined) {
+    if (userPurchases.length === 0) {
         throw createError(404, 'The user doesn\'t has purchases')
     }
 

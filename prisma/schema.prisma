@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Like {
+  id         Int  @id @default(autoincrement())
+  user_id    Int
+  auction_id Int
+  user       User @relation(fields: [user_id], references: [id])
+  //auction    Auction @relation(fields: [auction_id], references: [id])
+}
+
+model Message {
+  id               Int      @id @default(autoincrement())
+  message          String   @db.Text
+  user_sender_id   Int
+  created_at       DateTime @db.Date
+  user_receiver_id Int
+  user_sender      User     @relation(name: "SentMessages", fields: [user_sender_id], references: [id])
+  user_receiver    User     @relation(name: "ReceivedMessages", fields: [user_receiver_id], references: [id])
+
+  //notification Notification?
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  content    String   @db.Text
+  is_read    Boolean
+  created_at DateTime @db.Date
+  user_id    Int
+  auction_id Int?
+  message_id Int?
+  user       User     @relation(fields: [user_id], references: [id])
+  //auction    Auction @relation(fields: [auction_id], references: [id])
+  //message    Message? @relation(fields: [message_id], references: [id])
+}
+
+model Purchase {
+  id            Int      @id @default(autoincrement())
+  purchase_date DateTime @db.Date
+  final_price   Float    @db.Float
+  auction_id    Int
+  user_id       Int
+  user          User     @relation(fields: [user_id], references: [id])
+  //auction       Auction @relation(fields: [auction_id], references: [id])
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  first_name String    @db.VarChar(255)
+  last_name  String    @db.VarChar(255)
+  birth_date DateTime  @db.Date
+  email      String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  picture    String?   @db.VarChar(255)
+  balance    Float     @db.Float
+  role       String    @db.VarChar(255)
+  created_at DateTime  @db.Date
+  updated_at DateTime  @db.Date
+  deleted_at DateTime? @db.Date
+
+  sentMessages     Message[]      @relation(name: "SentMessages")
+  receivedMessages Message[]      @relation(name: "ReceivedMessages")
+  likes            Like[]
+  notifications    Notification[]
+  purchases        Purchase[]
+}

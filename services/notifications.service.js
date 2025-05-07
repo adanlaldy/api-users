@@ -1,37 +1,52 @@
-import createError from "http-errors";
+import dotenv from 'dotenv'
+import {PrismaClient} from '@prisma/client'
+import createError from "http-errors"
 
-const notifications = [
-    {
-        message: "hello world",
-        is_read: false,
-        // le reste
-        user_id: 2
+dotenv.config()
+
+const prisma = new PrismaClient()
+
+export const create = async (notification) => {
+
+    try {
+        return await prisma.notifications.create({
+            data: {
+                content: notification.content,
+                user_id: notification.user_id,
+                auction_id: 1,
+                message_id: notification.message_id
+            },
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error creating notification:', error.message)
     }
-]
-
-export const create = (notification) => {
-
-    notification.created_at = new Date().toISOString().split('T')[0]
-    notification.is_read = false
-    notifications.push(notification)
 }
 
-export const getByUserId = (id) => {
-    const userNotification = notifications.filter(notification => notification.user_id === Number(id))
+export const getByUserId = async (id) => {
 
-    if (userNotification.length === 0) {
-        throw createError(404, 'The user doesn\'t has notifications')
+    try {
+        return await prisma.notifications.findMany({
+            where: {
+                user_id: Number(id)
+            }
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error fetching notifications:', error.message)
     }
-
-    return userNotification
 }
 
-export const remove = (id) => {
-    const index = notifications.findIndex(notification => notification.id === Number(id));
+export const remove = async (id) => {
 
-    if (index === -1) {
-        throw createError(404, 'The notification doesn\'t exist');
+    try {
+        await prisma.notifications.delete({
+            where: {
+                id: Number(id)
+            }
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error deleting notification', error.message)
     }
-
-    return notifications.splice(index, 1)[0];
 }

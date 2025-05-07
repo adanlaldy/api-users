@@ -1,22 +1,36 @@
-import createError from "http-errors";
+import dotenv from 'dotenv'
+import {PrismaClient} from '@prisma/client'
+import createError from "http-errors"
 
-const likes = [
-    {
-        id:1, auction_id:2, user_id:1
+dotenv.config()
+
+const prisma = new PrismaClient()
+
+export const create = async (like) => {
+
+    try {
+        return await prisma.likes.create({
+            data: {
+                user_id: like.content,
+                auction_id: 1,
+            },
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error creating like:', error.message)
     }
-]
-
-export const create = (like) => {
-
-    likes.push(like)
 }
 
-export const remove = (id) => {
-    const index = likes.findIndex(like => like.id === Number(id));
+export const remove = async (id) => {
 
-    if (index === -1) {
-        throw createError(404, 'The like doesn\'t exist');
+    try {
+        await prisma.likes.delete({
+            where: {
+                id: Number(id)
+            }
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error deleting like', error.message)
     }
-
-    return likes.splice(index, 1)[0];
 }

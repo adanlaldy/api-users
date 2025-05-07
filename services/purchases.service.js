@@ -1,33 +1,48 @@
-import createError from "http-errors";
+import dotenv from 'dotenv'
+import {PrismaClient} from '@prisma/client'
+import createError from "http-errors"
 
-const purchases = [
-    {
-        id: 1, user_id: 3, auction_id: 1, final_price: 444
-    },
-    {
-        id: 2, user_id: 3, auction_id: 2, final_price: 555
-    },
-    {
-        id: 3, user_id: 4, auction_id: 3, final_price: 111
+dotenv.config()
+
+const prisma = new PrismaClient()
+
+export const create = async (purchase) => {
+
+    try {
+        return await prisma.purchases.create({
+            data: {
+                final_price: purchase.final_price,
+                auction_id: 1,
+                user_id: purchase.user_id
+            },
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error creating purchase:', error.message)
     }
-]
-
-export const create = (purchase) => {
-
-    purchases.push(purchase)
-    purchase.purchase_date = new Date().toISOString().split('T')[0];
 }
 
-export const getAll = () => {
-    return purchases
+export const getAll = async () => {
+
+    try {
+        return await prisma.purchases.findMany();
+
+    } catch (error) {
+        console.error("Error fetching purchases:", error.message);
+        throw error;
+    }
 }
 
-export const getByUserId = (id) => {
-    const userPurchases = purchases.filter(purchase => purchase.user_id === Number(id))
+export const getByUserId = async (id) => {
 
-    if (userPurchases.length === 0) {
-        throw createError(404, 'The user doesn\'t has purchases')
+    try {
+        return await prisma.purchases.findMany({
+            where: {
+                user_id: Number(id)
+            }
+        })
+
+    } catch (error) {
+        throw createError(404, 'Error fetching purchases:', error.message)
     }
-
-    return userPurchases
 }

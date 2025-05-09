@@ -1,29 +1,42 @@
-import createError from "http-errors";
+import dotenv from 'dotenv'
+import {PrismaClient} from '@prisma/client'
+import createError from "http-errors"
 
-const messages = []
+dotenv.config()
 
-export const create = (message) => {
+const prisma = new PrismaClient()
 
-    messages.push(message)
-    message.created_at = new Date().toISOString().split('T')[0];
+export const create = async (message) => {
+
+    try {
+        return await prisma.messages.create({
+            data: message,
+        })
+
+    } catch (error) {
+        throw createError(500, 'Error creating message:', error.message)
+    }
 }
 
-export const getAllSenderByUserId = (id) => {
-    const senderMessages = messages.filter(message => message.user_sender_id === Number(id))
+export const getAllByConversation = async (id) => {
 
-    if (senderMessages.length === 0) {
-        throw createError(404, 'The user doesn\'t has sent messages')
+    try {
+        const messages = await prisma.messages.findMany({
+            where: {
+                conversation_id: Number(id)
+            }
+        })
+
+        if (!messages) {
+            throw createError(404, 'Messages not found');
+        }
+
+        return messages
+    } catch (error) {
+        if (error.status === 404) {
+            throw error;
+        }
+
+        throw createError(500, 'Error fetching messages:', error.message)
     }
-
-    return senderMessages
-}
-
-export const getAllReceiverByUserId = (id) => {
-    const receiverMessages = messages.filter(message => message.user_receiver_id === Number(id))
-
-    if (receiverMessages.length === 0) {
-        throw createError(404, 'The user doesn\'t has sent messages')
-    }
-
-    return receiverMessages
 }

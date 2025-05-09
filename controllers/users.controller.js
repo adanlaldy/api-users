@@ -1,6 +1,9 @@
 import {create, getAll, getById, update, remove} from "../services/users.service.js";
+import jwt from "jsonwebtoken";
 
-export const createUser = (req, res) => {
+const SECRET_KEY = process.env.JWT_SECRET;
+
+export const createUser = async (req, res) => {
     const {firstName, lastName, birthDate, email, password, role} = req.body
 
     if (!firstName || !lastName || !birthDate || !email || !password || !role) {
@@ -10,22 +13,29 @@ export const createUser = (req, res) => {
         })
     }
 
-    create({firstName, lastName, birthDate, email, password, role})
+    try {
+        const user = await create({firstName, lastName, birthDate, email, password, role})
 
-    res.status(201).json({
-        success: true,
-        message: 'User has been created'
-    })
+        const token = jwt.sign({id: user.id, isAdmin: user.role}, SECRET_KEY, {expiresIn: "4h"});
+
+        res.status(201).json({user, token})
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getAllUsers = (req, res) => {
-    res.status(200).json({
-        success: true,
-        users: getAll()
-    })
+export const getAllUsers = async (req, res) => {
+
+    try {
+        const users = await getAll()
+
+        res.status(201).json(users)
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getUserById = (req, res) => {
+export const getUserById = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -35,13 +45,20 @@ export const getUserById = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        user: getById(id)
-    })
+    try {
+        const user = await getById(id)
+
+        res.status(201).json(user)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const updateUserById = (req, res) => {
+export const updateUserById = async (req, res) => {
     const {id} = req.params
     const {firstName, lastName, birthDate, email, password, picture, balance} = req.body
 
@@ -52,13 +69,20 @@ export const updateUserById = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        user: update(id, {firstName, lastName, birthDate, email, password, picture, balance})
-    })
+    try {
+        const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance})
+
+        res.status(201).json(user)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const deleteUserById = (req, res) => {
+export const deleteUserById = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -68,8 +92,18 @@ export const deleteUserById = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        user: remove(id)
-    })
+    try {
+        await remove(id)
+
+        res.status(201).json({
+            success: true,
+            message: 'User has been deleted'
+        })
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }

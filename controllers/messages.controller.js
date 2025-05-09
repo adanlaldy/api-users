@@ -1,24 +1,25 @@
-import {create, getAllSenderByUserId, getAllReceiverByUserId} from "../services/messages.service.js";
+import {create, getAllByConversation} from "../services/messages.service.js";
 
-export const createMessage = (req, res) => {
-    const {message, userSenderId, userReceiverId} = req.body
+export const createMessage = async (req, res) => {
+    const {content, userSenderId} = req.body
 
-    if (!message || !userSenderId || !userReceiverId) {
+    if (!content || !userSenderId) {
         return res.status(400).json({
             success: false,
             message: 'Invalid request'
         })
     }
 
-    create({message, userSenderId, userReceiverId})
+    try {
+        const message = await create({content, userSenderId})
 
-    res.status(201).json({
-        success: true,
-        message: 'Message has been created'
-    })
+        res.status(201).json(message)
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getAllReceiverMessagesByUserId = (req, res) => {
+export const getMessagesByConversation = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -28,24 +29,15 @@ export const getAllReceiverMessagesByUserId = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        messages: getAllReceiverByUserId(id)
-    })
-}
+    try {
+        const messages = await getAllByConversation(id)
 
-export const getAllSenderMessagesByUserId = (req, res) => {
-    const {id} = req.params
+        res.status(201).json(messages)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
 
-    if (!id) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid request'
-        })
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
     }
-
-    res.status(200).json({
-        success: true,
-        messages: getAllSenderByUserId(id)
-    })
 }

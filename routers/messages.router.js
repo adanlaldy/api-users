@@ -1,10 +1,9 @@
 import express from 'express'
-import {createMessage, getAllReceiverMessagesByUserId, getAllSenderMessagesByUserId} from "../controllers/messages.controller.js";
+import {createMessage, getMessagesByConversation} from "../controllers/messages.controller.js";
 
 const router = express.Router()
 
-router.post('/', createMessage)
-router.get('/receiver/:id', getAllReceiverMessagesByUserId)
-router.get('/sender/:id', getAllSenderMessagesByUserId)
+router.post("/send", createMessage);
+router.get("/conversation/:id", getMessagesByConversation);
 
 export default router

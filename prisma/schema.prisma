@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,25 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Like {
-  id         Int  @id @default(autoincrement())
+model Likes {
+  id         Int   @id @default(autoincrement())
   user_id    Int
   auction_id Int
-  user       User @relation(fields: [user_id], references: [id])
-  //auction    Auction @relation(fields: [auction_id], references: [id])
+  user       Users @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "Like_user_id_fkey")
 }
 
-model Message {
-  id               Int      @id @default(autoincrement())
-  message          String   @db.Text
-  user_sender_id   Int
-  created_at       DateTime @db.Date
-  user_receiver_id Int
-  user_sender      User     @relation(name: "SentMessages", fields: [user_sender_id], references: [id])
-  user_receiver    User     @relation(name: "ReceivedMessages", fields: [user_receiver_id], references: [id])
+model Messages {
+  id             Int      @id @default(autoincrement())
+  message        String   @db.Text
+  user_sender_id Int
+  created_at     DateTime @default(now())
+  is_read        Boolean  @default(false)
+  user_sender    Users    @relation(fields: [user_sender_id], references: [id])
+
+  @@index([user_sender_id], map: "Message_user_sender_id_fkey")
 }
 
-model Notification {
+model Conversations {
+  id              Int      @id @default(autoincrement())
+  last_message_at DateTime
+  created_at      DateTime @default(now())
+  user1_id        Int
+  user2_id        Int
+  user1           Users    @relation("User1", fields: [user1_id], references: [id])
+  user2           Users    @relation("User2", fields: [user2_id], references: [id])
+
+  @@index([user1_id], map: "Conversation_user1_id_fkey")
+  @@index([user2_id], map: "Conversation_user2_id_fkey")
+}
+
+model Notifications {
   id         Int      @id @default(autoincrement())
   content    String   @db.Text
   is_read    Boolean  @default(false)
@@ -34,38 +48,39 @@ model Notification {
   user_id    Int
   auction_id Int?
   message_id Int?
-  user       User     @relation(fields: [user_id], references: [id])
-  //auction    Auction @relation(fields: [auction_id], references: [id])
-  //message    Message? @relation(fields: [message_id], references: [id])
+  user       Users    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "Notification_user_id_fkey")
 }
 
-model Purchase {
+model Purchases {
   id            Int      @id @default(autoincrement())
   purchase_date DateTime @default(now())
   final_price   Float    @db.Float
   auction_id    Int
   user_id       Int
-  user          User     @relation(fields: [user_id], references: [id])
-  //auction       Auction @relation(fields: [auction_id], references: [id])
+  user          Users    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "Purchase_user_id_fkey")
 }
 
-model User {
-  id         Int       @id @default(autoincrement())
-  first_name String    @db.VarChar(255)
-  last_name  String    @db.VarChar(255)
-  birth_date DateTime  @db.Date
-  email      String    @db.VarChar(255)
-  password   String    @db.VarChar(255)
-  picture    String?   @db.VarChar(255)
-  balance    Float     @db.Float
-  role       String    @db.VarChar(255)
-  created_at DateTime  @default(now())
-  updated_at DateTime  @db.Date
-  deleted_at DateTime? @db.Date
-
-  sentMessages     Message[]      @relation(name: "SentMessages")
-  receivedMessages Message[]      @relation(name: "ReceivedMessages")
-  likes            Like[]
-  notifications    Notification[]
-  purchases        Purchase[]
+model Users {
+  id            Int             @id @default(autoincrement())
+  first_name    String          @db.VarChar(255)
+  last_name     String          @db.VarChar(255)
+  birth_date    DateTime        @db.Date
+  email         String          @db.VarChar(255)
+  password      String          @db.VarChar(255)
+  picture       String?         @db.VarChar(255)
+  balance       Float           @db.Float
+  role          String          @db.VarChar(255)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @db.Date
+  deleted_at    DateTime?       @db.Date
+  user1         Conversations[] @relation("User1")
+  user2         Conversations[] @relation("User2")
+  likes         Likes[]
+  sentMessages  Messages[]
+  notifications Notifications[]
+  purchases     Purchases[]
 }

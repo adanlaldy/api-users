@@ -1,7 +1,7 @@
 import {create, getByUserId, remove} from "../services/notifications.service.js";
 
-export const createNotification = (req, res) => {
-    const {message, auctionId, userId, messageId} = req.body
+export const createNotification = async (req, res) => {
+    const {content, auctionId, userId, messageId} = req.body
 
     if (!userId) {
         return res.status(400).json({
@@ -10,15 +10,17 @@ export const createNotification = (req, res) => {
         })
     }
 
-    create({message, auctionId, userId, messageId})
+    try {
+        const notification = await create({content, auctionId, userId, messageId})
 
-    res.status(201).json({
-        success: true,
-        message: 'Notification has been created'
-    })
+
+        res.status(201).json(notification)
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getAllNotificationsByUserId = (req, res) => {
+export const getAllNotificationsByUserId = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -28,13 +30,20 @@ export const getAllNotificationsByUserId = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        notifications: getByUserId(id)
-    })
+    try {
+        const messages = await getByUserId(id)
+
+        res.status(201).json(messages)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const deleteNotificationById = (req, res) => {
+export const deleteNotificationById = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -44,8 +53,18 @@ export const deleteNotificationById = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        notification: remove(id)
-    })
+    try {
+        await remove(id)
+
+        res.status(201).json({
+            success: true,
+            message: 'Notification has been deleted'
+        })
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }

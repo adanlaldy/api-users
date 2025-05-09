@@ -12,28 +12,37 @@ export const create = async (notification) => {
         return await prisma.notifications.create({
             data: {
                 content: notification.content,
-                user_id: notification.user_id,
+                user_id: notification.userId,
                 auction_id: 1,
-                message_id: notification.message_id
+                message_id: notification.messageId
             },
         })
 
     } catch (error) {
-        throw createError(404, 'Error creating notification:', error.message)
+        throw createError(500, 'Error creating notification:', error.message)
     }
 }
 
 export const getByUserId = async (id) => {
 
     try {
-        return await prisma.notifications.findMany({
+        const notifications = await prisma.notifications.findMany({
             where: {
                 user_id: Number(id)
             }
         })
 
+        if (!notifications) {
+            throw createError(404, 'Notifications not found');
+        }
+
+        return notifications
+
     } catch (error) {
-        throw createError(404, 'Error fetching notifications:', error.message)
+        if (error.status === 404) {
+            throw error;
+        }
+        throw createError(500, 'Error fetching notifications by user:', error.message)
     }
 }
 
@@ -47,6 +56,9 @@ export const remove = async (id) => {
         })
 
     } catch (error) {
-        throw createError(404, 'Error deleting notification', error.message)
+        if (error.code === 'P2025') {
+            throw createError(404, 'Notification not found for deletion');
+        }
+        throw createError(500, 'Error deleting notification', error.message)
     }
 }

@@ -1,6 +1,6 @@
 import {create, getAll, getByUserId} from "../services/purchases.service.js";
 
-export const createPurchase = (req, res) => {
+export const createPurchase = async (req, res) => {
     const {finalPrice, auctionId, userId} = req.body
 
     if (!finalPrice || !auctionId || !userId) {
@@ -10,22 +10,26 @@ export const createPurchase = (req, res) => {
         })
     }
 
-    create({finalPrice, auctionId, userId})
+    try {
+        const purchase = await create({finalPrice, auctionId, userId})
 
-    res.status(201).json({
-        success: true,
-        message: 'Purchase has been created'
-    })
+        res.status(201).json(purchase)
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getAllPurchases = (req, res) => {
-    res.status(200).json({
-        success: true,
-        messages: getAll()
-    })
+export const getAllPurchases = async (req, res) => {
+    try {
+        const purchases = await getAll()
+
+        res.status(201).json(purchases)
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }
 
-export const getAllPurchasesByUserId = (req, res) => {
+export const getAllPurchasesByUserId = async (req, res) => {
     const {id} = req.params
 
     if (!id) {
@@ -35,8 +39,15 @@ export const getAllPurchasesByUserId = (req, res) => {
         })
     }
 
-    res.status(200).json({
-        success: true,
-        purchase: getByUserId(id)
-    })
+    try {
+        const purchases = await getByUserId(id)
+
+        res.status(201).json(purchases)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }

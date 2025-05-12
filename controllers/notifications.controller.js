@@ -33,7 +33,7 @@ export const getAllNotificationsByUserId = async (req, res) => {
     try {
         const messages = await getByUserId(id)
 
-        res.status(201).json(messages)
+        res.status(200).json(messages)
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({success: false, message: error.message});
@@ -56,7 +56,7 @@ export const deleteNotificationById = async (req, res) => {
     try {
         await remove(id)
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: 'Notification has been deleted'
         })

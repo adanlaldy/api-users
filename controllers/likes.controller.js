@@ -32,7 +32,7 @@ export const deleteLikeById = async (req, res) => {
     try {
         await remove(id)
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: 'Like has been deleted'
         })

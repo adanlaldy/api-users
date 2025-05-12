@@ -32,7 +32,7 @@ export const getMessagesByConversation = async (req, res) => {
     try {
         const messages = await getAllByConversation(id)
 
-        res.status(201).json(messages)
+        res.status(200).json(messages)
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({success: false, message: error.message});

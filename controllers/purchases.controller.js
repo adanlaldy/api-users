@@ -23,7 +23,7 @@ export const getAllPurchases = async (req, res) => {
     try {
         const purchases = await getAll()
 
-        res.status(201).json(purchases)
+        res.status(200).json(purchases)
     } catch (error) {
         return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
     }
@@ -42,7 +42,7 @@ export const getAllPurchasesByUserId = async (req, res) => {
     try {
         const purchases = await getByUserId(id)
 
-        res.status(201).json(purchases)
+        res.status(200).json(purchases)
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({success: false, message: error.message});

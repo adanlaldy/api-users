@@ -29,7 +29,7 @@ model Messages {
 
 model Conversations {
   id              Int      @id @default(autoincrement())
-  last_message_at DateTime
+  last_message_at DateTime?
   created_at      DateTime @default(now())
   user1_id        Int
   user2_id        Int
@@ -77,6 +77,7 @@ model Users {
   created_at    DateTime        @default(now())
   updated_at    DateTime        @db.Date
   deleted_at    DateTime?       @db.Date
+
   user1         Conversations[] @relation("User1")
   user2         Conversations[] @relation("User2")
   likes         Likes[]

@@ -48,7 +48,7 @@ export const getUserById = async (req, res) => {
     try {
         const user = await getById(id)
 
-        res.status(201).json(user)
+        res.status(200).json(user)
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({success: false, message: error.message});

@@ -41,7 +41,7 @@ export const getByUserId = async (id) => {
             }
         })
 
-        if (!purchases) {
+        if (purchases.length === 0) {
             throw createError(404, 'Purchases not found');
         }
 

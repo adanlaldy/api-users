@@ -33,7 +33,8 @@ export const create = async (user) => {
 export const getAll = async () => {
 
     try {
-        return await prisma.users.findMany();
+        const users = await prisma.users.findMany();
+        return users.map(({ password, ...userWithoutPassword }) => userWithoutPassword);
 
     } catch (error) {
         throw createError(500, 'Error fetching users', error.message);
@@ -53,7 +54,8 @@ export const getById = async (id) => {
             throw createError(404, 'User not found');
         }
 
-        return user;
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
 
     } catch (error) {
         if (error.status === 404) {

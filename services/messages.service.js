@@ -10,7 +10,10 @@ export const create = async (message) => {
 
     try {
         return await prisma.messages.create({
-            data: message,
+            data: {
+                message: message.content,
+                conversation_id: message.conversationId
+            },
         })
 
     } catch (error) {
@@ -27,7 +30,7 @@ export const getAllByConversation = async (id) => {
             }
         })
 
-        if (!messages) {
+        if (messages.length === 0) {
             throw createError(404, 'Messages not found');
         }
 

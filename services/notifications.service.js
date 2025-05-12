@@ -32,7 +32,7 @@ export const getByUserId = async (id) => {
             }
         })
 
-        if (!notifications) {
+        if (notifications.length === 0) {
             throw createError(404, 'Notifications not found');
         }
 

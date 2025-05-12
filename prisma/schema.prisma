@@ -17,24 +17,24 @@ model Likes {
 }
 
 model Messages {
-  id             Int      @id @default(autoincrement())
-  message        String   @db.Text
-  user_sender_id Int
-  created_at     DateTime @default(now())
-  is_read        Boolean  @default(false)
-  user_sender    Users    @relation(fields: [user_sender_id], references: [id])
-
-  @@index([user_sender_id], map: "Message_user_sender_id_fkey")
+  id              Int           @id @default(autoincrement())
+  message         String        @db.Text
+  conversation_id Int
+  created_at      DateTime      @default(now())
+  is_read         Boolean       @default(false)
+  conversation    Conversations @relation(fields: [conversation_id], references: [id])
 }
 
 model Conversations {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   last_message_at DateTime?
-  created_at      DateTime @default(now())
+  created_at      DateTime  @default(now())
   user1_id        Int
   user2_id        Int
-  user1           Users    @relation("User1", fields: [user1_id], references: [id])
-  user2           Users    @relation("User2", fields: [user2_id], references: [id])
+  user1           Users     @relation("User1", fields: [user1_id], references: [id])
+  user2           Users     @relation("User2", fields: [user2_id], references: [id])
+
+  message Messages[]
 
   @@index([user1_id], map: "Conversation_user1_id_fkey")
   @@index([user2_id], map: "Conversation_user2_id_fkey")
@@ -65,23 +65,22 @@ model Purchases {
 }
 
 model Users {
-  id            Int             @id @default(autoincrement())
-  first_name    String          @db.VarChar(255)
-  last_name     String          @db.VarChar(255)
-  birth_date    DateTime        @db.Date
-  email         String          @db.VarChar(255)
-  password      String          @db.VarChar(255)
-  picture       String?         @db.VarChar(255)
-  balance       Float           @db.Float
-  role          String          @db.VarChar(255)
-  created_at    DateTime        @default(now())
-  updated_at    DateTime        @db.Date
-  deleted_at    DateTime?       @db.Date
+  id         Int       @id @default(autoincrement())
+  first_name String    @db.VarChar(255)
+  last_name  String    @db.VarChar(255)
+  birth_date DateTime  @db.Date
+  email      String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  picture    String?   @db.VarChar(255)
+  balance    Float     @db.Float
+  role       String    @db.VarChar(255)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @db.Date
+  deleted_at DateTime? @db.Date
 
   user1         Conversations[] @relation("User1")
   user2         Conversations[] @relation("User2")
   likes         Likes[]
-  sentMessages  Messages[]
   notifications Notifications[]
   purchases     Purchases[]
 }

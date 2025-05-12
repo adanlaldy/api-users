@@ -1,9 +1,9 @@
 import {create, getAllByConversation} from "../services/messages.service.js";
 
 export const createMessage = async (req, res) => {
-    const {content, userSenderId, conversationId} = req.body
+    const {content, conversationId} = req.body
 
-    if (!content || !userSenderId || !conversationId) {
+    if (!content || !conversationId) {
         return res.status(400).json({
             success: false,
             message: 'Invalid request'
@@ -11,7 +11,7 @@ export const createMessage = async (req, res) => {
     }
 
     try {
-        const message = await create({content, userSenderId, conversationId})
+        const message = await create({content, conversationId})
 
         res.status(201).json(message)
     } catch (error) {

@@ -1,0 +1,701 @@
+openapi: 3.0.0
+info:
+  title: API users
+  version: 2.0.0
+servers:
+  - url: http://localhost:3000/v1.0
+paths:
+  /users/register:
+    post:
+      summary: Create a new user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "john"
+                lastName:
+                  type: string
+                  example: "doe"
+                birthDate:
+                  type: string
+                  example: "1990-05-25"
+                email:
+                  type: string
+                  example: "john@doe.com"
+                password:
+                  type: string
+                  example: "Azerty123."
+                role:
+                  type: boolean
+                  example: "admin"
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /users/login:
+    post:
+      summary: Login user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "john@doe.com"
+                password:
+                  type: string
+                  example: "Azerty123."
+      responses:
+        '200':
+          description: User logged in
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - User
+      responses:
+        '200':
+          description: A list of users
+        '500':
+          description: Internal server error
+  /users/me:
+    get:
+      summary: Get user by token
+      tags:
+        - User
+      responses:
+        '200':
+          description: User found
+        401:
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /users/user/{id}:
+    get:
+      summary: Get user by id
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User found
+        '500':
+          description: Internal server error
+  /users/internship:
+    get:
+      summary: Is normal ?
+      tags:
+        - User
+      responses:
+        '418':
+          description: ester egg
+  /users/update/{id}:
+    put:
+      summary: Update user by id
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                nickname:
+                  type: string
+                password:
+                  type: string
+                is_admin:
+                  type: boolean
+                birthdate:
+                  type: string
+      responses:
+        '200':
+          description: User updated
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /users/delete/{id}:
+    delete:
+      summary: Delete user by id
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /users/logout:
+    delete:
+      summary: Logout user
+      tags:
+        - User
+      responses:
+        '200':
+          description: User logged out
+        '500':
+          description: Internal server error
+  #endregion
+  #region post
+  /posts/create:
+    post:
+      summary: Create a new post
+      tags:
+        - Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "tapis rose"
+                description:
+                  type: string
+                  example: "tapis rose en bon état"
+                quantity:
+                  type: integer
+                  example: 1
+                id_state:
+                  type: integer
+                  example: 2
+                location:
+                  type: integer
+                  example: 11821
+                id_tag:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Post created
+        '500':
+          description: Internal server error
+  /posts/need/{id}:
+    post:
+      summary: claim object that post with message
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                title:
+                  type: string
+      responses:
+        '200':
+          description: A list of posts that need help
+        '500':
+          description: Internal server error
+  /posts/search/around:
+    post:
+      summary: Get all posts around
+      tags:
+        - Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cityId:
+                  type: integer
+                  example: 11821
+                distanceKm:
+                  type: integer
+                  example: 5
+      responses:
+        '200':
+          description: A list of posts around
+        '500':
+          description: Internal server error
+  /posts/ratio:
+    post:
+      summary: Get ratio of part categories of posts in a city
+      tags:
+        - Post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 4
+                idCity:
+                  type: integer
+                  example: 11821
+      responses:
+        '200':
+          description: A list of ratio of likes and dislikes
+        '500':
+          description: Internal server error
+  /posts:
+    get:
+      summary: Get all posts
+      tags:
+        - Post
+      responses:
+        '200':
+          description: A list of posts
+        '500':
+          description: Internal server error
+  /posts/search/available:
+    get:
+      summary: Get all available posts
+      tags:
+        - Post
+      responses:
+        '200':
+          description: A list of available posts
+        '500':
+          description: Internal server error
+  /posts/search/{id}:
+    get:
+      summary: Get post by id
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post found
+        '500':
+          description: Internal server error
+  /posts/location/{id}:
+    get:
+      summary: Get post by location
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post found
+        '500':
+          description: Internal server error
+  /posts/search/tag/{id}:
+    get:
+      summary: Get post by tag
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post found
+        '500':
+          description: Internal server error
+  /posts/update/{id}:
+    put:
+      summary: Update post by id
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                quantity:
+                  type: integer
+                id_state:
+                  type: integer
+                location:
+                  type: integer
+                id_tag:
+                  type: integer
+                tags:
+                  type: integer
+      responses:
+        '200':
+          description: Post updated
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /posts/delete/{id}:
+    delete:
+      summary: Delete post by id
+      tags:
+        - Post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+    #endregion
+    #region language
+  /languages/create:
+    post:
+      summary: Create a new language
+      tags:
+        - Language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "portuguese"
+      responses:
+        '200':
+          description: Language created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /languages:
+    get:
+      summary: Get all languages
+      tags:
+        - Language
+      responses:
+        '200':
+          description: A list of languages
+        '500':
+          description: Internal server error
+  /languages/delete/{id}:
+    delete:
+      summary: Delete language by id
+      tags:
+        - Language
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Language deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  #endregion
+  #region theme
+  /themes/create:
+    post:
+      summary: Create a new theme
+      tags:
+        - Theme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "nature"
+      responses:
+        '200':
+          description: Theme created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /themes:
+    get:
+      summary: Get all themes
+      tags:
+        - Theme
+      responses:
+        '200':
+          description: A list of themes
+        '500':
+          description: Internal server error
+  /themes/delete/{id}:
+    delete:
+      summary: Delete theme by id
+      tags:
+        - Theme
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Theme deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  #endregion
+  #region state
+  /states/create:
+    post:
+      summary: Create a new state
+      tags:
+        - State
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "mediocre"
+      responses:
+        '200':
+          description: State created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /states:
+    get:
+      summary: Get all states
+      tags:
+        - State
+      responses:
+        '200':
+          description: A list of states
+        '500':
+          description: Internal server error
+  /states/delete/{id}:
+    delete:
+      summary: Delete state by id
+      tags:
+        - State
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: State deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  #endregion
+  #region tag
+  /tag/create:
+    post:
+      summary: Create a new tag
+      tags:
+        - Tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "maquillage"
+      responses:
+        '200':
+          description: Tag created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /tag:
+    get:
+      summary: Get all tags
+      tags:
+        - Tag
+      responses:
+        '200':
+          description: A list of tags
+        '500':
+          description: Internal server error
+  /tags/delete/{id}:
+    delete:
+      summary: Delete tag by id
+      tags:
+        - Tag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tag deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  #endregion
+  #region like
+  /likes/create/{id}:
+    post:
+      summary: Create a new like
+      tags:
+        - Like
+      parameters:
+        - name: idPost
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Like created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /likes:
+    get:
+      summary: Get all likes of me
+      tags:
+        - Like
+      responses:
+        '200':
+          description: A list of likes
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /likes/delete/{id}:
+    delete:
+      summary: Delete like by id
+      tags:
+        - Like
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Like deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /location:
+    get:
+      summary: Get all locations
+      tags:
+        - Location
+      responses:
+        '200':
+          description: A list of locations
+        '500':
+          description: Internal server error
+  /location/{id}:
+    get:
+      summary: Get location by id
+      tags:
+        - Location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Location found
+        '500':
+          description: Internal server error
+  #endregion

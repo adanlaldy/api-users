@@ -6,7 +6,8 @@ import {
     updateUserById,
     deleteUserById,
     loginUser,
-    logoutUser
+    logoutUser,
+    getMe
 } from "../controllers/users.controller.js";
 import {
     isEmailValid,
@@ -21,6 +22,7 @@ const router = express.Router()
 
 router.post('/', checkToken, checkAdmin, createUser)
 router.get('/', checkToken, checkAdmin, getAllUsers)
+router.get('/me', checkToken, getMe);
 router.get('/:id', checkToken, checkAdmin, getUserById)
 router.put('/update/:id', updateUserById)
 router.delete('/logout', checkToken, logoutUser);

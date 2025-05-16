@@ -36,17 +36,40 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
-export const getUserById = async (req, res) => {
-    const {id} = req.params
-
-    if (!id) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid request'
-        })
-    }
-
+export const getMe = async (req, res) => {
     try {
+        const {id} = req.user
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request'
+            })
+        }
+
+        const user = await getById(id)
+
+        res.status(200).json(user)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
+}
+
+export const getUserById = async (req, res) => {
+    try {
+        const {id} = req.params
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request'
+            })
+        }
+
         const user = await getById(id)
 
         res.status(200).json(user)
@@ -60,17 +83,17 @@ export const getUserById = async (req, res) => {
 }
 
 export const updateUserById = async (req, res) => {
-    const {id} = req.params
-    const {firstName, lastName, birthDate, email, password, picture, balance} = req.body
-
-    if (!id) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid request'
-        })
-    }
-
     try {
+        const {id} = req.params
+        const {firstName, lastName, birthDate, email, password, picture, balance} = req.body
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request'
+            })
+        }
+
         const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance})
 
         res.status(200).json(user)
@@ -84,16 +107,16 @@ export const updateUserById = async (req, res) => {
 }
 
 export const deleteUserById = async (req, res) => {
-    const {id} = req.params
-
-    if (!id) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid request'
-        })
-    }
-
     try {
+        const {id} = req.params
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request'
+            })
+        }
+
         await remove(id)
 
         res.status(200).json({
@@ -146,8 +169,12 @@ export const loginUser = async (req, res) => {
 };
 
 export const logoutUser = async (req, res) => {
-    res.clearCookie("token");
-    res.status(200).json({
-        message: "Logout successful",
-    });
+    try {
+        res.clearCookie("token");
+        res.status(200).json({
+            message: "Logout successful",
+        });
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
 }

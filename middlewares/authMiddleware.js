@@ -8,6 +8,7 @@ export const checkAdmin = (req, res, next) => {
     if (!req.user.isAdmin) {
         return res.status(401).json({message: 'Access denied: User is not an admin'})
     }
+
     next()
 };
 
@@ -27,7 +28,6 @@ export function checkToken(req, res, next) {
     try {
         req.user = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-        console.error('Token verification failed:', error.message);
         return res.status(401).json({message: 'Invalid token'});
     }
 
@@ -42,6 +42,7 @@ export function checkSelfId(req, res, next) {
     if (req.user.id !== parseInt(req.params.id)) {
         return res.status(401).json({message: 'Access denied: User is not the owner of this account'})
     }
+
     next()
 }
 

@@ -5,7 +5,8 @@ import {
     getUserById,
     updateUserById,
     deleteUserById,
-    loginUser
+    loginUser,
+    logoutUser
 } from "../controllers/users.controller.js";
 import {
     isEmailValid,
@@ -14,6 +15,7 @@ import {
     isPasswordLong,
     isUniqueEmail
 } from "../middlewares/userMiddleware.js";
+import {checkToken} from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
 
@@ -21,6 +23,7 @@ router.post('/', createUser)
 router.get('/', getAllUsers)
 router.get('/:id', getUserById)
 router.put('/update/:id', updateUserById)
+router.delete('/logout', checkToken, logoutUser);
 router.delete('/:id', deleteUserById)
 
 router.post('/register', isEmailValid, isUniqueEmail, isPasswordLong, isPasswordCasse, isPasswordDigitValid, createUser);

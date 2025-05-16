@@ -61,6 +61,7 @@ export const getById = async (id) => {
         if (error.status === 404) {
             throw error;
         }
+
         throw createError(500, 'Error fetching user', error.message);
     }
 }
@@ -83,6 +84,7 @@ export const getByEmail = async (email) => {
         if (error.status === 404) {
             throw error;
         }
+
         throw createError(500, 'Error fetching user', error.message);    }
 }
 
@@ -114,6 +116,7 @@ export const update = async (id, user) => {
         if (error.code === 'P2025') {
             throw createError(404, 'User not found for update');
         }
+
         throw createError(500, 'Error updating user', error.message);    }
 }
 
@@ -130,5 +133,6 @@ export const remove = async (id) => {
         if (error.code === 'P2025') {
             throw createError(404, 'User not found for deletion');
         }
+
         throw createError(500, 'Error deleting user', error.message);    }
 }

@@ -3,7 +3,7 @@ info:
   title: API users
   version: 2.0.0
 servers:
-  - url: http://localhost:3000/v1.0
+  - url: http://localhost:3000/v1
 paths:
   /users/register:
     post:
@@ -89,7 +89,7 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error
-  /users/user/{id}:
+  /users/{id}:
     get:
       summary: Get user by id
       tags:
@@ -105,14 +105,23 @@ paths:
           description: User found
         '500':
           description: Internal server error
-  /users/internship:
-    get:
-      summary: Is normal ?
+    delete:
+      summary: Delete user by id
       tags:
         - User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
-        '418':
-          description: ester egg
+        '200':
+          description: User deleted
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
   /users/update/{id}:
     put:
       summary: Update user by id
@@ -131,40 +140,26 @@ paths:
             schema:
               type: object
               properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                birthDate:
+                  format: date-time
+                  example: "2025-05-16T00:00:00.000Z"
                 email:
-                  type: string
-                name:
-                  type: string
-                nickname:
                   type: string
                 password:
                   type: string
-                is_admin:
-                  type: boolean
-                birthdate:
+                picture:
+                  type: string
+                balance:
+                  type: number
+                role:
                   type: string
       responses:
         '200':
           description: User updated
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /users/delete/{id}:
-    delete:
-      summary: Delete user by id
-      tags:
-        - User
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: User deleted
         '401':
           description: Unauthorized
         '500':
@@ -179,523 +174,195 @@ paths:
           description: User logged out
         '500':
           description: Internal server error
-  #endregion
-  #region post
-  /posts/create:
+  /purchases/:
+    get:
+      summary: Get all purchases
+      responses:
+        '200':
+          description: A list of purchases
     post:
-      summary: Create a new post
-      tags:
-        - Post
+      summary: Create purchase
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - finalPrice
+                - auctionId
+                - userId
               properties:
-                title:
-                  type: string
-                  example: "tapis rose"
-                description:
-                  type: string
-                  example: "tapis rose en bon état"
-                quantity:
+                finalPrice:
+                  type: number
+                  example: 123
+                auctionId:
                   type: integer
                   example: 1
-                id_state:
+                userId:
                   type: integer
                   example: 2
-                location:
+      responses:
+        '201':
+          description: Purchase created successfully
+  /purchases/user/{userId}:
+    get:
+      summary: Get purchases by user id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: List of purchases by user
+  /messages/send/:
+    post:
+      summary: Create message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - conversationId
+              properties:
+                content:
+                  type: string
+                  example: mon deuxième message
+                conversationId:
                   type: integer
-                  example: 11821
-                id_tag:
+                  example: 6
+      responses:
+        '201':
+          description: Message sent successfully
+  /messages/conversation/{conversationId}:
+    get:
+      summary: Get messages by conversation id
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 6
+      responses:
+        '200':
+          description: List of messages for the conversation
+  /notifications/:
+    post:
+      summary: Create notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - auctionId
+                - userId
+                - messageId
+              properties:
+                content:
+                  type: string
+                  example: je suis un contenu
+                auctionId:
+                  type: integer
+                  example: 1
+                userId:
+                  type: integer
+                  example: 2
+                messageId:
+                  type: integer
+                  example: 3
+      responses:
+        '201':
+          description: Notification created successfully
+  /notifications/user/{userId}:
+    get:
+      summary: Get notifications by user id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: List of notifications for the user
+  /notifications/{id}:
+    delete:
+      summary: Delete notification by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Notification deleted successfully
+  /likes/:
+    post:
+      summary: Create like
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - auctionId
+              properties:
+                userId:
+                  type: integer
+                  example: 2
+                auctionId:
                   type: integer
                   example: 1
       responses:
-        '200':
-          description: Post created
-        '500':
-          description: Internal server error
-  /posts/need/{id}:
-    post:
-      summary: claim object that post with message
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                title:
-                  type: string
-      responses:
-        '200':
-          description: A list of posts that need help
-        '500':
-          description: Internal server error
-  /posts/search/around:
-    post:
-      summary: Get all posts around
-      tags:
-        - Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                cityId:
-                  type: integer
-                  example: 11821
-                distanceKm:
-                  type: integer
-                  example: 5
-      responses:
-        '200':
-          description: A list of posts around
-        '500':
-          description: Internal server error
-  /posts/ratio:
-    post:
-      summary: Get ratio of part categories of posts in a city
-      tags:
-        - Post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  example: 4
-                idCity:
-                  type: integer
-                  example: 11821
-      responses:
-        '200':
-          description: A list of ratio of likes and dislikes
-        '500':
-          description: Internal server error
-  /posts:
-    get:
-      summary: Get all posts
-      tags:
-        - Post
-      responses:
-        '200':
-          description: A list of posts
-        '500':
-          description: Internal server error
-  /posts/search/available:
-    get:
-      summary: Get all available posts
-      tags:
-        - Post
-      responses:
-        '200':
-          description: A list of available posts
-        '500':
-          description: Internal server error
-  /posts/search/{id}:
-    get:
-      summary: Get post by id
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Post found
-        '500':
-          description: Internal server error
-  /posts/location/{id}:
-    get:
-      summary: Get post by location
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Post found
-        '500':
-          description: Internal server error
-  /posts/search/tag/{id}:
-    get:
-      summary: Get post by tag
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Post found
-        '500':
-          description: Internal server error
-  /posts/update/{id}:
-    put:
-      summary: Update post by id
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                quantity:
-                  type: integer
-                id_state:
-                  type: integer
-                location:
-                  type: integer
-                id_tag:
-                  type: integer
-                tags:
-                  type: integer
-      responses:
-        '200':
-          description: Post updated
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /posts/delete/{id}:
-    delete:
-      summary: Delete post by id
-      tags:
-        - Post
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Post deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-    #endregion
-    #region language
-  /languages/create:
-    post:
-      summary: Create a new language
-      tags:
-        - Language
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "portuguese"
-      responses:
-        '200':
-          description: Language created
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /languages:
-    get:
-      summary: Get all languages
-      tags:
-        - Language
-      responses:
-        '200':
-          description: A list of languages
-        '500':
-          description: Internal server error
-  /languages/delete/{id}:
-    delete:
-      summary: Delete language by id
-      tags:
-        - Language
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Language deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  #endregion
-  #region theme
-  /themes/create:
-    post:
-      summary: Create a new theme
-      tags:
-        - Theme
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "nature"
-      responses:
-        '200':
-          description: Theme created
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /themes:
-    get:
-      summary: Get all themes
-      tags:
-        - Theme
-      responses:
-        '200':
-          description: A list of themes
-        '500':
-          description: Internal server error
-  /themes/delete/{id}:
-    delete:
-      summary: Delete theme by id
-      tags:
-        - Theme
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Theme deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  #endregion
-  #region state
-  /states/create:
-    post:
-      summary: Create a new state
-      tags:
-        - State
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "mediocre"
-      responses:
-        '200':
-          description: State created
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /states:
-    get:
-      summary: Get all states
-      tags:
-        - State
-      responses:
-        '200':
-          description: A list of states
-        '500':
-          description: Internal server error
-  /states/delete/{id}:
-    delete:
-      summary: Delete state by id
-      tags:
-        - State
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: State deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  #endregion
-  #region tag
-  /tag/create:
-    post:
-      summary: Create a new tag
-      tags:
-        - Tag
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "maquillage"
-      responses:
-        '200':
-          description: Tag created
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /tag:
-    get:
-      summary: Get all tags
-      tags:
-        - Tag
-      responses:
-        '200':
-          description: A list of tags
-        '500':
-          description: Internal server error
-  /tags/delete/{id}:
-    delete:
-      summary: Delete tag by id
-      tags:
-        - Tag
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Tag deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  #endregion
-  #region like
-  /likes/create/{id}:
-    post:
-      summary: Create a new like
-      tags:
-        - Like
-      parameters:
-        - name: idPost
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Like created
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /likes:
-    get:
-      summary: Get all likes of me
-      tags:
-        - Like
-      responses:
-        '200':
-          description: A list of likes
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /likes/delete/{id}:
+        '201':
+          description: Like created successfully
+  /likes/{id}:
     delete:
       summary: Delete like by id
-      tags:
-        - Like
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+            example: 5
       responses:
-        '200':
-          description: Like deleted
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-  /location:
-    get:
-      summary: Get all locations
-      tags:
-        - Location
+        '204':
+          description: Like deleted successfully
+  /conversations/:
+    post:
+      summary: Create conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user1Id
+                - user2Id
+              properties:
+                user1Id:
+                  type: integer
+                  example: 2
+                user2Id:
+                  type: integer
+                  example: 4
       responses:
-        '200':
-          description: A list of locations
-        '500':
-          description: Internal server error
-  /location/{id}:
-    get:
-      summary: Get location by id
-      tags:
-        - Location
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Location found
-        '500':
-          description: Internal server error
-  #endregion
+        '201':
+          description: Conversation created successfully

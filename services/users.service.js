@@ -86,7 +86,8 @@ export const update = async (id, user) => {
 
     try {
         if (user.password) {
-            user.password = await bcrypt.hash(user.password);
+            const saltRounds = 10
+            user.password = await bcrypt.hash(user.password, saltRounds)
         }
 
         return await prisma.users.update({
@@ -101,7 +102,8 @@ export const update = async (id, user) => {
                 password: user.password,
                 picture: user.picture,
                 balance: user.balance,
-                updated_at: new Date()
+                updated_at: new Date(),
+                role: user.role
             },
         });
 
@@ -116,11 +118,14 @@ export const update = async (id, user) => {
 export const remove = async (id) => {
 
     try {
-        await prisma.users.delete({
+        return await prisma.users.update({
             where: {
-                id: Number(id)
-            }
-        })
+                id: Number(id),
+            },
+            data: {
+                deleted_at: new Date(),
+            },
+        });
 
     } catch (error) {
         if (error.code === 'P2025') {

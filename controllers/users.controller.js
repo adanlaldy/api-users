@@ -85,7 +85,7 @@ export const getUserById = async (req, res) => {
 export const updateUserById = async (req, res) => {
     try {
         const {id} = req.params
-        const {firstName, lastName, birthDate, email, password, picture, balance} = req.body
+        const {firstName, lastName, birthDate, email, password, picture, balance, role} = req.body
 
         if (!id) {
             return res.status(400).json({
@@ -94,7 +94,7 @@ export const updateUserById = async (req, res) => {
             })
         }
 
-        const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance})
+        const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance, role})
 
         res.status(200).json(user)
     } catch (error) {

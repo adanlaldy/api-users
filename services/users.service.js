@@ -65,14 +65,36 @@ export const getById = async (id) => {
     }
 }
 
+export const getByEmail = async (email) => {
+    try {
+        const user = await prisma.users.findFirst({
+            where: {
+                email: email
+            }
+        });
+
+        if (!user) {
+            throw createError(404, 'User not found');
+        }
+
+        return user;
+
+    } catch (error) {
+        if (error.status === 404) {
+            throw error;
+        }
+        throw createError(500, 'Error fetching user', error.message);    }
+}
+
+
 export const update = async (id, user) => {
 
     try {
         if (user.password) {
-            user.password = await hashPassword(user.password);
+            user.password = await bcrypt.hash(user.password);
         }
 
-        const updatedUser = await prisma.users.update({
+        return await prisma.users.update({
             where: {
                 id: Number(id),
             },
@@ -87,8 +109,6 @@ export const update = async (id, user) => {
                 updated_at: new Date()
             },
         });
-
-        return updatedUser;
 
     } catch (error) {
         if (error.code === 'P2025') {

@@ -1,5 +1,6 @@
-import {create, getAll, getById, update, remove} from "../services/users.service.js";
+import {create, getAll, getById, update, remove, getByEmail} from "../services/users.service.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -15,6 +16,8 @@ export const createUser = async (req, res) => {
 
     try {
         const user = await create({firstName, lastName, birthDate, email, password, role})
+        user.role = undefined;
+        user.id = undefined;
 
         const token = jwt.sign({id: user.id, isAdmin: user.role}, SECRET_KEY, {expiresIn: "4h"});
 
@@ -107,3 +110,40 @@ export const deleteUserById = async (req, res) => {
         return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
     }
 }
+
+export const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+
+        const user = await getByEmail(email);
+
+        if (!user) {
+            return res.status(400).json({message: "Invalid credentials"});
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({message: "Invalid credentials"});
+        }
+
+        const token = jwt.sign({id: user.id, role: user.role}, SECRET_KEY, {expiresIn: "4h"});
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 4 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({
+            message: "Login successful",
+            token,
+        });
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
+};
+

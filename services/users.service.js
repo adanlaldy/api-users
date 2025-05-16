@@ -68,17 +68,11 @@ export const getById = async (id) => {
 
 export const getByEmail = async (email) => {
     try {
-        const user = await prisma.users.findFirst({
+        return await prisma.users.findFirst({
             where: {
                 email: email
             }
         });
-
-        if (!user) {
-            throw createError(404, 'User not found');
-        }
-
-        return user;
 
     } catch (error) {
         if (error.status === 404) {
@@ -87,7 +81,6 @@ export const getByEmail = async (email) => {
 
         throw createError(500, 'Error fetching user', error.message);    }
 }
-
 
 export const update = async (id, user) => {
 

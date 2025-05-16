@@ -16,10 +16,8 @@ export const createUser = async (req, res) => {
 
     try {
         const user = await create({firstName, lastName, birthDate, email, password, role})
-        user.role = undefined;
-        user.id = undefined;
 
-        const token = jwt.sign({id: user.id, isAdmin: user.role}, SECRET_KEY, {expiresIn: "4h"});
+        const token = jwt.sign({id: user.id, role: role}, SECRET_KEY, {expiresIn: "4h"});
 
         res.status(201).json({user, token})
     } catch (error) {

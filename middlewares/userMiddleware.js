@@ -61,7 +61,7 @@ export async function isUniqueEmail(req, res, next) {
         if (!user) {
             next()
         } else {
-            res.status(400).json({ message: "User already exists" })
+            res.status(400).json({ message: "Email already used" })
         }
     } catch (error) {
         res.status(500).json({ message: "Error verifying email uniqueness", error: error.message })

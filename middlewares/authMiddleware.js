@@ -5,7 +5,7 @@ export const checkAdmin = (req, res, next) => {
         return res.status(401).json({message: 'Access denied: No user information found'})
     }
 
-    if (!req.user.isAdmin) {
+    if (req.user.role !== 'admin') {
         return res.status(401).json({message: 'Access denied: User is not an admin'})
     }
 

@@ -15,13 +15,13 @@ import {
     isPasswordLong,
     isUniqueEmail
 } from "../middlewares/userMiddleware.js";
-import {checkToken} from "../middlewares/authMiddleware.js";
+import {checkAdmin, checkToken} from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
 
-router.post('/', createUser)
-router.get('/', getAllUsers)
-router.get('/:id', getUserById)
+router.post('/', checkToken, checkAdmin, createUser)
+router.get('/', checkToken, checkAdmin, getAllUsers)
+router.get('/:id', checkToken, checkAdmin, getUserById)
 router.put('/update/:id', updateUserById)
 router.delete('/logout', checkToken, logoutUser);
 router.delete('/:id', deleteUserById)

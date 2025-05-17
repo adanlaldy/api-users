@@ -13,7 +13,7 @@ export const create = async (notification) => {
             data: {
                 content: notification.content,
                 user_id: notification.userId,
-                auction_id: 1,
+                auction_id: notification.auctionId,
                 message_id: notification.messageId
             },
         })

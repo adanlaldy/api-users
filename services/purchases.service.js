@@ -12,7 +12,7 @@ export const create = async (purchase) => {
         return await prisma.purchases.create({
             data: {
                 final_price: purchase.finalPrice,
-                auction_id: 1,
+                auction_id: purchase.auctionId,
                 user_id: purchase.userId
             },
         })

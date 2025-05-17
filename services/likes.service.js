@@ -12,7 +12,7 @@ export const create = async (like) => {
         return await prisma.likes.create({
             data: {
                 user_id: like.userId,
-                auction_id: 1,
+                auction_id: like.auctionId,
             },
         })
 

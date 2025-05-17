@@ -3,7 +3,7 @@
     title: API users
     version: 2.0.0
   servers:
-    - url: http://localhost:3000/v1
+    - url: http://localhost:3001/v1
   paths:
     /users/register:
       post:
@@ -33,7 +33,7 @@
                     type: string
                     example: "Azerty123."
                   role:
-                    type: boolean
+                    type: string
                     example: "admin"
         responses:
           '201':
@@ -174,7 +174,7 @@
             description: User logged out
           '500':
             description: Internal server error
-    /purchases/:
+    /purchases:
       get:
         summary: Get all purchases
         description: Retrieve all purchases made by users.
@@ -240,7 +240,7 @@
           '500':
             description: Internal server error.
 
-    /messages/send/:
+    /messages/send:
       post:
         summary: Create message
         description: Send a new message in a conversation.
@@ -292,7 +292,7 @@
           '500':
             description: Internal server error.
 
-    /notifications/:
+    /notifications:
       post:
         summary: Create notification
         description: Create a new notification related to an auction or message.
@@ -374,7 +374,7 @@
           '500':
             description: Internal server error.
 
-    /likes/:
+    /likes:
       post:
         summary: Create like
         description: Add a like to an auction by a user.
@@ -426,7 +426,7 @@
           '500':
             description: Internal server error.
 
-    /conversations/:
+    /conversations:
       post:
         summary: Create conversation
         description: Start a new conversation between two users.

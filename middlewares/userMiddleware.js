@@ -1,5 +1,9 @@
-import {getByEmail} from "../services/users.service.js";
+import { getByEmail } from "../services/users.service.js"
 
+/**
+ * Middleware to validate the format of an email address using regex.
+ * Ensures the email field is present and well-formed.
+ */
 export function isEmailValid(req, res, next) {
     const { email } = req.body
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
@@ -11,6 +15,9 @@ export function isEmailValid(req, res, next) {
     }
 }
 
+/**
+ * Middleware to ensure the password contains at least one digit.
+ */
 export function isPasswordDigitValid(req, res, next) {
     const { password } = req.body
     const regex = /(?=.*\d)/
@@ -22,7 +29,9 @@ export function isPasswordDigitValid(req, res, next) {
     }
 }
 
-
+/**
+ * Middleware to ensure the password contains both lowercase and uppercase letters.
+ */
 export function isPasswordCasse(req, res, next) {
     const { password } = req.body
     const regex = /(?=.*[a-z])(?=.*[A-Z])/
@@ -36,7 +45,9 @@ export function isPasswordCasse(req, res, next) {
     }
 }
 
-
+/**
+ * Middleware to ensure the password is at least 8 characters long.
+ */
 export function isPasswordLong(req, res, next) {
     const { password } = req.body
 
@@ -49,6 +60,10 @@ export function isPasswordLong(req, res, next) {
     }
 }
 
+/**
+ * Middleware to check whether the provided email is unique (not already registered).
+ * Calls the user service to fetch existing users by email.
+ */
 export async function isUniqueEmail(req, res, next) {
     const { email } = req.body
 

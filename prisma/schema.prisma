@@ -1,35 +1,40 @@
+// Generate the Prisma client using the JavaScript client
 generator client {
   provider = "prisma-client-js"
 }
 
+// Define the database connection (MySQL in this case)
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+/// Represents a "Like" relationship between a user and an auction.
 model Likes {
-  id         Int   @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   user_id    Int
   auction_id Int
-  user       Users @relation(fields: [user_id], references: [id])
-  auction   Auction @relation(fields: [auction_id], references: [id])
+  user       Users   @relation(fields: [user_id], references: [id])       // User who liked
+  auction    Auction @relation(fields: [auction_id], references: [id])    // Auction liked
 
   @@index([user_id], map: "Like_user_id_fkey")
 }
 
+/// Represents a message sent in a conversation between two users.
 model Messages {
   id              Int           @id @default(autoincrement())
   message         String        @db.Text
   conversation_id Int
-  created_at      DateTime      @default(now())
-  is_read         Boolean       @default(false)
+  created_at      DateTime      @default(now())                           // When the message was created
+  is_read         Boolean       @default(false)                           // Read status
   conversation    Conversations @relation(fields: [conversation_id], references: [id])
 }
 
+/// Represents a private conversation between two users.
 model Conversations {
   id              Int       @id @default(autoincrement())
-  last_message_at DateTime?
-  created_at      DateTime  @default(now())
+  last_message_at DateTime?                                        // Timestamp of the last message
+  created_at      DateTime  @default(now())                        // When the conversation was started
   user1_id        Int
   user2_id        Int
   user1           Users     @relation("User1", fields: [user1_id], references: [id])
@@ -41,20 +46,22 @@ model Conversations {
   @@index([user2_id], map: "Conversation_user2_id_fkey")
 }
 
+/// Represents a notification sent to a user (e.g., for new messages, likes).
 model Notifications {
   id         Int      @id @default(autoincrement())
   content    String   @db.Text
-  is_read    Boolean  @default(false)
+  is_read    Boolean  @default(false)                      // Read status
   created_at DateTime @default(now())
   user_id    Int
   auction_id Int
-  message_id Int?
+  message_id Int?                                          // Optional message reference (nullable)
   user       Users    @relation(fields: [user_id], references: [id])
-  auction Auction @relation(fields: [auction_id], references: [id])
+  auction    Auction  @relation(fields: [auction_id], references: [id])
 
   @@index([user_id], map: "Notification_user_id_fkey")
 }
 
+/// Represents a purchase made by a user for a specific auction.
 model Purchases {
   id            Int      @id @default(autoincrement())
   purchase_date DateTime @default(now())
@@ -62,11 +69,12 @@ model Purchases {
   auction_id    Int
   user_id       Int
   user          Users    @relation(fields: [user_id], references: [id])
-  auction Auction @relation(fields: [auction_id], references: [id])
+  auction       Auction  @relation(fields: [auction_id], references: [id])
 
   @@index([user_id], map: "Purchase_user_id_fkey")
 }
 
+/// Represents a user of the platform (buyer, seller, admin, etc.)
 model Users {
   id         Int       @id @default(autoincrement())
   first_name String    @db.VarChar(255)
@@ -74,29 +82,32 @@ model Users {
   birth_date DateTime  @db.Date
   email      String    @db.VarChar(255)
   password   String    @db.VarChar(255)
-  picture    String?   @db.VarChar(255)
+  picture    String?   @db.VarChar(255)                            // Optional profile picture
   balance    Float     @db.Float
-  role       String    @db.VarChar(255)
+  role       String    @db.VarChar(255)                            // e.g., 'admin', 'buyer', 'seller'
   created_at DateTime  @default(now())
   updated_at DateTime  @db.Date
   deleted_at DateTime? @db.Date
 
-  user1         Conversations[] @relation("User1")
-  user2         Conversations[] @relation("User2")
+  // Relations
+  user1         Conversations[] @relation("User1")                 // Conversations where user is user1
+  user2         Conversations[] @relation("User2")                 // Conversations where user is user2
   likes         Likes[]
   notifications Notifications[]
   purchases     Purchases[]
-  buyer Auction[] @relation("Buyer")
-  seller Auction[] @relation("Seller")
+  buyer         Auction[]       @relation("Buyer")                // Auctions the user has bought
+  seller        Auction[]       @relation("Seller")               // Auctions the user has created
 }
 
+/// Represents a file, e.g., documents or media attached to an auction.
 model File {
   id          Int       @id @default(autoincrement())
   content     String
-  contentType String
-  auctions    Auction[] // Relation inverse (facultative si un fichier peut être lié à plusieurs enchères)
+  contentType String                                       // MIME type of the file
+  auctions    Auction[]                                   // Reverse relation (optional)
 }
 
+/// Represents an auction listing on the platform.
 model Auction {
   id             Int       @id @default(autoincrement())
   title          String
@@ -114,33 +125,37 @@ model Auction {
   buyerId        Int?
   stateId        Int
 
-  seller Users @relation("Seller", fields: [sellerId], references: [id])
-  buyer Users? @relation("Buyer", fields: [buyerId], references: [id])
-  file     File      @relation(fields: [fileId], references: [id])
-  tag      Tag       @relation(fields: [tagId], references: [id])
-  state    State     @relation(fields: [stateId], references: [id])
-  pictures Picture[]
-  likes Likes[]
+  // Relations
+  seller        Users      @relation("Seller", fields: [sellerId], references: [id])
+  buyer         Users?     @relation("Buyer", fields: [buyerId], references: [id])
+  file          File       @relation(fields: [fileId], references: [id])
+  tag           Tag        @relation(fields: [tagId], references: [id])
+  state         State      @relation(fields: [stateId], references: [id])
+  pictures      Picture[]
+  likes         Likes[]
   notifications Notifications[]
-  purchases Purchases[]
+  purchases     Purchases[]
 }
 
+/// Represents an image associated with an auction.
 model Picture {
   id        Int    @id @default(autoincrement())
-  path      String
+  path      String                              // File path or URL
   auctionId Int
 
   auction Auction @relation(fields: [auctionId], references: [id])
 }
 
+/// Represents a category or tag assigned to an auction.
 model Tag {
   id       Int       @id @default(autoincrement())
   name     String
   auctions Auction[]
 }
 
+/// Represents the current state of an auction (e.g., active, sold, cancelled).
 model State {
   id        Int       @id @default(autoincrement())
-  stateType String    @unique
+  stateType String    @unique                            // Must be unique (e.g., "open", "closed")
   auctions  Auction[]
 }

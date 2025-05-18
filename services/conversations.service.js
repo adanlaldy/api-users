@@ -6,8 +6,15 @@ dotenv.config()
 
 const prisma = new PrismaClient()
 
+/**
+ * Creates a new conversation between two users.
+ * @param {Object} conversation - Conversation data.
+ * @param {number} conversation.user1Id - ID of the first user in the conversation.
+ * @param {number} conversation.user2Id - ID of the second user in the conversation.
+ * @returns {Promise<Object>} The created conversation record.
+ * @throws Throws a 500 error if creation fails.
+ */
 export const create = async (conversation) => {
-
     try {
         return await prisma.conversations.create({
             data: {
@@ -15,7 +22,6 @@ export const create = async (conversation) => {
                 user2_id: conversation.user2Id
             },
         })
-
     } catch (error) {
         throw createError(500, 'Error creating conversation:', error.message)
     }

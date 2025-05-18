@@ -1,5 +1,10 @@
 import {create, remove} from "../services/likes.service.js";
 
+/**
+ * Creates a like for a specific auction by a user.
+ * Requires 'userId' and 'auctionId' in the request body.
+ * Returns 201 with the created like object or error status.
+ */
 export const createLike = async (req, res) => {
     const {userId, auctionId} = req.body
 
@@ -19,6 +24,13 @@ export const createLike = async (req, res) => {
     }
 }
 
+/**
+ * Deletes a like by its ID.
+ * Requires 'id' parameter in the URL.
+ * Returns 200 on successful deletion,
+ * 400 if ID missing, 404 if like not found,
+ * or 500 on server error.
+ */
 export const deleteLikeById = async (req, res) => {
     const {id} = req.params
 

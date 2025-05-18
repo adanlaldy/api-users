@@ -4,6 +4,12 @@ import bcrypt from "bcrypt";
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
+/**
+ * Creates a new user with the provided data.
+ * Validates required fields before calling service.
+ * Generates a JWT token valid for 4 hours on success.
+ * Returns 201 with user and token, or error status/message.
+ */
 export const createUser = async (req, res) => {
     const {firstName, lastName, birthDate, email, password, role} = req.body
 
@@ -25,8 +31,11 @@ export const createUser = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves all users.
+ * Returns 200 with users array or 500 on error.
+ */
 export const getAllUsers = async (req, res) => {
-
     try {
         const users = await getAll()
 
@@ -36,6 +45,11 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves the currently authenticated user data.
+ * Requires user ID from req.user.
+ * Returns 200 with user data, 400 if no ID, or error status.
+ */
 export const getMe = async (req, res) => {
     try {
         const {id} = req.user
@@ -59,6 +73,10 @@ export const getMe = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves user by given ID parameter.
+ * Returns 200 with user or error status/message.
+ */
 export const getUserById = async (req, res) => {
     try {
         const {id} = req.params
@@ -82,6 +100,11 @@ export const getUserById = async (req, res) => {
     }
 }
 
+/**
+ * Updates user details for the given ID.
+ * Accepts partial or full user data in request body.
+ * Returns updated user or appropriate error.
+ */
 export const updateUserById = async (req, res) => {
     try {
         const {id} = req.params
@@ -106,6 +129,10 @@ export const updateUserById = async (req, res) => {
     }
 }
 
+/**
+ * Deletes a user by the specified ID.
+ * Returns success message or error.
+ */
 export const deleteUserById = async (req, res) => {
     try {
         const {id} = req.params
@@ -132,6 +159,11 @@ export const deleteUserById = async (req, res) => {
     }
 }
 
+/**
+ * Authenticates a user with email and password.
+ * On success, issues JWT token valid for 4 hours and sets it in an HTTP-only cookie.
+ * Returns 200 with token or error on failure.
+ */
 export const loginUser = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -168,6 +200,10 @@ export const loginUser = async (req, res) => {
     }
 };
 
+/**
+ * Logs out the current user by clearing the token cookie.
+ * Returns a success message or error.
+ */
 export const logoutUser = async (req, res) => {
     try {
         res.clearCookie("token");

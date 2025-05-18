@@ -1,5 +1,10 @@
 import {create, getAllByConversation} from "../services/messages.service.js";
 
+/**
+ * Creates a new message in a conversation.
+ * Requires 'content' and 'conversationId' in the request body.
+ * Returns 201 with the created message or an error status.
+ */
 export const createMessage = async (req, res) => {
     const {content, conversationId} = req.body
 
@@ -19,6 +24,12 @@ export const createMessage = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves all messages for a given conversation ID.
+ * Requires conversation ID as a URL parameter.
+ * Returns 200 with an array of messages, 400 if ID missing,
+ * 404 if no messages found, or 500 on server error.
+ */
 export const getMessagesByConversation = async (req, res) => {
     const {id} = req.params
 

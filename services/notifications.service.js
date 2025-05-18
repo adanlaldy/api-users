@@ -6,8 +6,17 @@ dotenv.config()
 
 const prisma = new PrismaClient()
 
+/**
+ * Creates a new notification record.
+ * @param {Object} notification - Notification data.
+ * @param {string} notification.content - Content of the notification.
+ * @param {number} notification.userId - ID of the user receiving the notification.
+ * @param {number} [notification.auctionId] - Related auction ID (optional).
+ * @param {number} [notification.messageId] - Related message ID (optional).
+ * @returns {Promise<Object>} The created notification.
+ * @throws Throws 500 error if creation fails.
+ */
 export const create = async (notification) => {
-
     try {
         return await prisma.notifications.create({
             data: {
@@ -17,14 +26,18 @@ export const create = async (notification) => {
                 message_id: notification.messageId
             },
         })
-
     } catch (error) {
         throw createError(500, 'Error creating notification:', error.message)
     }
 }
 
+/**
+ * Retrieves all notifications for a specific user.
+ * @param {number|string} id - User ID.
+ * @returns {Promise<Array>} List of notifications for the user.
+ * @throws Throws 404 if no notifications found, 500 on other errors.
+ */
 export const getByUserId = async (id) => {
-
     try {
         const notifications = await prisma.notifications.findMany({
             where: {
@@ -46,15 +59,19 @@ export const getByUserId = async (id) => {
     }
 }
 
+/**
+ * Deletes a notification by its ID.
+ * @param {number|string} id - Notification ID.
+ * @returns {Promise<void>} Resolves when deletion is successful.
+ * @throws Throws 404 if notification not found, 500 on other errors.
+ */
 export const remove = async (id) => {
-
     try {
         await prisma.notifications.delete({
             where: {
                 id: Number(id)
             }
         })
-
     } catch (error) {
         if (error.code === 'P2025') {
             throw createError(404, 'Notification not found for deletion');

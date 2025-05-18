@@ -1,5 +1,10 @@
 import {create, getAll, getByUserId} from "../services/purchases.service.js";
 
+/**
+ * Creates a new purchase record.
+ * Requires finalPrice, auctionId, and userId in the request body.
+ * Returns 201 with the created purchase or error status.
+ */
 export const createPurchase = async (req, res) => {
     const {finalPrice, auctionId, userId} = req.body
 
@@ -19,6 +24,10 @@ export const createPurchase = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves all purchases.
+ * Returns 200 with array of purchases or 500 on error.
+ */
 export const getAllPurchases = async (req, res) => {
     try {
         const purchases = await getAll()
@@ -29,6 +38,11 @@ export const getAllPurchases = async (req, res) => {
     }
 }
 
+/**
+ * Retrieves all purchases made by a specific user.
+ * Requires user ID as a URL parameter.
+ * Returns 200 with user's purchases, 400 if ID missing, 404 if not found, or 500 on error.
+ */
 export const getAllPurchasesByUserId = async (req, res) => {
     const {id} = req.params
 

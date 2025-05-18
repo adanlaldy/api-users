@@ -1,5 +1,12 @@
 import {create} from "../services/conversations.service.js";
 
+/**
+ * Creates a new conversation between two users.
+ * Requires 'user1Id' and 'user2Id' in the request body.
+ * Returns 201 status with the created conversation object on success,
+ * 400 if request data is missing or invalid,
+ * or 500 if an internal server error occurs.
+ */
 export const createConversation = async (req, res) => {
     const {user1Id, user2Id} = req.body
 

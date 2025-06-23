@@ -1,22 +1,21 @@
-# Base image
-FROM node:22.16
+# Étape 1 — Build
+FROM node:22.16 AS build-stage
 
-# Créer un dossier de travail dans le conteneur
 WORKDIR /app
 
-# Copier les fichiers de dépendances
-COPY package*.json ./
+# Copier les fichiers de dépendances et le schéma Prisma
+COPY package.json ./
+COPY prisma ./prisma
 
-# Installer les dépendances
+# Installer TOUTES les dépendances (y compris celles de dev comme Prisma CLI)
 RUN npm install
 
-RUN npm rebuild bcrypt --build-from-source
+# Générer le client Prisma (nécessite prisma CLI et schema.prisma)
+RUN npx prisma generate
 
-# Copier le reste de l'application
+# Copier le reste du projet
 COPY . .
 
-# Exposer le port utilisé par Express
 EXPOSE 3001
 
-# Commande pour démarrer le serveur
-CMD ["node", "server.js"]
+CMD npx prisma migrate deploy && node server.js

@@ -1,11 +1,12 @@
 // Generate the Prisma client using the JavaScript client
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 // Define the database connection (MySQL in this case)
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -65,7 +66,7 @@ model Notifications {
 model Purchases {
   id            Int      @id @default(autoincrement())
   purchase_date DateTime @default(now())
-  final_price   Float    @db.Float
+  final_price   Float
   auction_id    Int
   user_id       Int
   user          Users    @relation(fields: [user_id], references: [id])
@@ -83,7 +84,7 @@ model Users {
   email      String    @db.VarChar(255)
   password   String    @db.VarChar(255)
   picture    String?   @db.VarChar(255)                            // Optional profile picture
-  balance    Float     @db.Float
+  balance    Float
   role       String    @db.VarChar(255)                            // e.g., 'admin', 'buyer', 'seller'
   created_at DateTime  @default(now())
   updated_at DateTime  @db.Date

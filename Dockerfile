@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE 3001
 
-CMD npx prisma migrate deploy && node server.js
+CMD ["node", "server.js"]

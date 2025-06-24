@@ -2,8 +2,10 @@ import express from 'express'
 import {
     createNotification,
     getAllNotificationsByUserId,
-    deleteNotificationById
+    deleteNotificationById,
+    updateNotificationById
 } from "../controllers/notifications.controller.js"
+import {updateUserById} from "../controllers/users.controller.js";
 
 const router = express.Router()
 
@@ -27,5 +29,7 @@ router.get('/user/:id', getAllNotificationsByUserId)
  * @access Public or protected depending on controller logic
  */
 router.delete('/:id', deleteNotificationById)
+
+router.put('/update/:id', updateNotificationById)
 
 export default router

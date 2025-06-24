@@ -1,4 +1,4 @@
-import {create, getByUserId, remove} from "../services/notifications.service.js";
+import {create, getByUserId, remove, update} from "../services/notifications.service.js";
 
 /**
  * Creates a new notification.
@@ -74,6 +74,30 @@ export const deleteNotificationById = async (req, res) => {
             success: true,
             message: 'Notification has been deleted'
         })
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
+}
+
+export const updateNotificationById = async (req,res) => {
+    try {
+        const {id} = req.params
+        const {is_read} = req.body
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request'
+            })
+        }
+
+        const notification = await update(id, {is_read})
+
+        res.status(200).json(notification)
     } catch (error) {
         if (error.status === 404) {
             return res.status(404).json({success: false, message: error.message});

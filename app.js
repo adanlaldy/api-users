@@ -33,7 +33,10 @@ app.use(express.json())
 /**
  * Enable Cross-Origin Resource Sharing (CORS)
  */
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 /**
  * Middleware for parsing cookies from HTTP requests

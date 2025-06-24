@@ -79,3 +79,23 @@ export const remove = async (id) => {
         throw createError(500, 'Error deleting notification', error.message)
     }
 }
+
+export const update = async (id, notification) => {
+    try {
+
+        return await prisma.notifications.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                is_read: notification.is_read,
+            },
+        });
+
+    } catch (error) {
+        if (error.code === 'P2025') {
+            throw createError(404, 'Notification not found for update');
+        }
+        throw createError(500, 'Error updating notification', error.message);
+    }
+}

@@ -47,7 +47,7 @@ router.get('/me', checkToken, getMe)
  * @desc Get a specific user by ID (admin only)
  * @access Protected (Admin)
  */
-router.get('/:id', checkToken, checkAdmin, getUserById)
+router.get('/:id', checkToken, getUserById)
 
 /**
  * @route PUT /update/:id

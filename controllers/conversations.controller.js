@@ -1,4 +1,4 @@
-import {create} from "../services/conversations.service.js";
+import {create, getAllByUser} from "../services/conversations.service.js";
 
 /**
  * Creates a new conversation between two users.
@@ -22,6 +22,29 @@ export const createConversation = async (req, res) => {
 
         res.status(201).json(conversation)
     } catch (error) {
+        return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
+    }
+}
+
+export const getConversationByUser = async (req, res) => {
+    const {id} = req.params
+
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid request'
+        })
+    }
+
+    try {
+        const conversations = await getAllByUser(id)
+
+        res.status(200).json(conversations)
+    } catch (error) {
+        if (error.status === 404) {
+            return res.status(404).json({success: false, message: error.message});
+        }
+
         return res.status(500).json({success: false, message: 'Internal Server Error', error: error.message});
     }
 }

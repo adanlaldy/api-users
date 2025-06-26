@@ -13,6 +13,7 @@ import YAML from 'yamljs'
 import { fileURLToPath } from 'node:url'
 import * as OpenApiValidator from 'express-openapi-validator'
 import cookieParser from "cookie-parser"
+import bodyParser from "body-parser";
 
 // Resolve __dirname and __filename in ES module context
 const __filename = fileURLToPath(import.meta.url)
@@ -37,6 +38,10 @@ app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
 }));
+
+// ⬇️ augmente la limite à 10mb par exemple
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 /**
  * Middleware for parsing cookies from HTTP requests

@@ -180,7 +180,7 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({message: "Invalid credentials"});
         }
 
-        const token = jwt.sign({id: user.id, role: user.role, name: user.name}, SECRET_KEY, {expiresIn: "4h"});
+        const token = jwt.sign({id: user.id}, SECRET_KEY, {expiresIn: "4h"});
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -190,6 +190,12 @@ export const loginUser = async (req, res) => {
         res.status(200).json({
             message: "Login successful",
             token,
+            user: {
+                id: user.id,
+                role: user.role,
+                first_name: user.first_name,
+                last_name: user.last_name
+            }
         });
     } catch (error) {
         if (error.status === 404) {

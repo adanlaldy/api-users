@@ -1,5 +1,5 @@
 import express from 'express'
-import { createConversation } from "../controllers/conversations.controller.js"
+import { createConversation, getConversationByUser } from "../controllers/conversations.controller.js"
 
 const router = express.Router()
 
@@ -9,5 +9,7 @@ const router = express.Router()
  * @access Public or protected depending on controller logic
  */
 router.post('/', createConversation)
+
+router.get('/user/:id', getConversationByUser)
 
 export default router

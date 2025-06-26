@@ -26,3 +26,29 @@ export const create = async (conversation) => {
         throw createError(500, 'Error creating conversation:', error.message)
     }
 }
+
+export const getAllByUser = async (id) => {
+    try {
+        const conversations = await prisma.conversations.findMany({
+            where: {
+                OR: [
+                    { user1_id: Number(id) },
+                    { user2_id: Number(id) }
+                ]
+            }
+        })
+
+        if (conversations.length === 0) {
+            throw createError(404, 'Conversations not found');
+        }
+
+        return conversations
+    } catch (error) {
+        if (error.status === 404) {
+            throw error;
+        }
+        throw createError(500, 'Error fetching conversations:', error.message)
+    }
+}
+
+

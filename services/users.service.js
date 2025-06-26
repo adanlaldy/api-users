@@ -123,7 +123,8 @@ export const update = async (id, user) => {
                 picture: user.picture,
                 balance: user.balance,
                 updated_at: new Date(),
-                role: user.role
+                role: user.role,
+                deleted_at: user.deletedAt
             },
         });
 

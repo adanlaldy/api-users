@@ -108,7 +108,7 @@ export const getUserById = async (req, res) => {
 export const updateUserById = async (req, res) => {
     try {
         const {id} = req.params
-        const {firstName, lastName, birthDate, email, password, picture, balance, role} = req.body
+        const {firstName, lastName, birthDate, email, password, picture, balance, role, deletedAt} = req.body
 
         if (!id) {
             return res.status(400).json({
@@ -117,7 +117,7 @@ export const updateUserById = async (req, res) => {
             })
         }
 
-        const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance, role})
+        const user = await update(id, {firstName, lastName, birthDate, email, password, picture, balance, role, deletedAt})
 
         res.status(200).json(user)
     } catch (error) {
@@ -180,7 +180,11 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({message: "Invalid credentials"});
         }
 
-        const token = jwt.sign({id: user.id}, SECRET_KEY, {expiresIn: "4h"});
+        if (user.deleted_at !== null) {
+            return res.status(401).json({ message: "Your account is deleted" });
+        }
+
+        const token = jwt.sign({id: user.id, role: user.role}, SECRET_KEY, {expiresIn: "4h"});
 
         res.cookie("token", token, {
             httpOnly: true,

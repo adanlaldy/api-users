@@ -36,7 +36,8 @@ app.use(express.json())
  */
 app.use(cors({
     origin: "http://localhost:5173",
-    credentials: true
+    credentials: true,
+    allowedHeaders: ["Authorization", "Content-Type"],
 }));
 
 // ⬇️ augmente la limite à 10mb par exemple
